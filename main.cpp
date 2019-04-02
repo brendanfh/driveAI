@@ -1,13 +1,11 @@
 #include "game/game.h"
 
-#include <unistd.h>
+#include <iostream>
 
 int main() {
-	DriveGame game;	
+	DriveGame game;
 
-	game.Draw();
-
-	sleep(10);
+	game.Run();
 
 	return 0;
 }

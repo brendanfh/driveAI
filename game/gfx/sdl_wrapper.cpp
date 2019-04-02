@@ -13,17 +13,20 @@ SDLWrapper::SDLWrapper(std::string title, int width, int height)
 	}
 
 	this->gl_ctx = SDL_GL_CreateContext(this->window);
+
+	SDL_GL_SetSwapInterval(1);
 }
 
 SDLWrapper::~SDLWrapper()
 {
+	SDL_GL_DeleteContext(this->gl_ctx);
 	SDL_DestroyWindow(this->window);
 	this->window = NULL;
 
 	SDL_Quit();
 }
 
-auto SDLWrapper::Clear(float r, float g, float b, float a) -> void
+auto SDLWrapper::Clear(float r, float g, float b, float a) const -> void
 {
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -32,4 +35,9 @@ auto SDLWrapper::Clear(float r, float g, float b, float a) -> void
 auto SDLWrapper::UpdateSurface() -> void
 {
 	SDL_GL_SwapWindow(this->window);
+}
+
+auto SDLWrapper::PollEvents(SDL_Event *event) -> bool
+{
+	return SDL_PollEvent(event) > 0;	
 }

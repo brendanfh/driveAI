@@ -65,7 +65,6 @@ GLWrapper::GLWrapper()
 
 	glUseProgram(program);
 	glDisable(GL_DEPTH_TEST);
-	//glDisable(GL_CULL_FACE);
 
 	SetViewport(-1, 1, 1, -1);
 }
@@ -119,6 +118,7 @@ GLMesh::GLMesh(int max_vertex_count, int max_index_count)
 
 GLMesh::~GLMesh()
 {
+	glDeleteVertexArrays(1, &vao);
 	glDeleteBuffers(1, &v_buffer);
 	glDeleteBuffers(1, &i_buffer);
 }
@@ -166,6 +166,14 @@ auto GLMesh::SetIndicies(const int *inds, int num_inds) -> void
 	}
 }
 
+auto GLMesh::SetColor(float r, float g, float b, float a) -> void
+{
+	color[0] = r;
+	color[1] = g;
+	color[2] = b;
+	color[3] = a;
+}
+
 auto GLMesh::Buffer() const -> void
 {
 	glBindBuffer(GL_ARRAY_BUFFER, v_buffer);
@@ -179,8 +187,8 @@ auto GLMesh::Render() const -> void
 	float c = cos(rot);
 	float s = sin(rot);
 	const float trans_mat[9] = {
-		sx * c, -sy * s, 0,
-		sx * s,  sy * c, 0,
+		sx * c, -sx * s, 0,
+		sy * s,  sy * c, 0,
 		tx, ty, 1
 	};
 

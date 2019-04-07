@@ -48,6 +48,7 @@ public:
 	auto Init() -> void;
 	auto SetVerticies(const float *verticies, int num_verts) -> void;
 	auto SetIndicies(const int *indicies, int num_inds) -> void;
+	auto SetColor(float r, float g, float b, float a) -> void;
 	auto Buffer() const -> void;
 	auto Render() const -> void;
 

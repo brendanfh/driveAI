@@ -3,31 +3,16 @@
 #include <chrono>
 #include <iostream>
 
-DriveGame::DriveGame() : mesh(100, 100)
+DriveGame::DriveGame()
 {
 	this->sdl = std::make_shared<SDLWrapper>("Game title", 800, 600);
 	this->gl = std::make_shared<GLWrapper>();
+	this->car = std::make_shared<Car>(80, 60);
 	this->running = true;
 
-	this->gl->SetViewport(0, 0, 80, 60);
+	this->gl->SetViewport(0, 0, 160, 120);
 
-	const float verts[8] = {
-		-0.5, -0.5,
-		 0.5, -0.5,
-		 0.5,  0.5,
-		-0.5,  0.5,
-	};
-
-	const int inds[6] = {
-		0, 1, 2, 0, 2, 3
-	};
-
-	mesh.Init();
-	mesh.SetVerticies(verts, 8);
-	mesh.SetIndicies(inds, 6);
-	mesh.Scale(16, 14);
-	mesh.Rotate(3.14159265 / 4);
-	mesh.Buffer();
+	this->keyboard = std::make_shared<KeyboardManager>();
 }
 
 DriveGame::~DriveGame()
@@ -68,22 +53,28 @@ auto DriveGame::HandleEvent(SDL_Event *ev) -> void
 		switch (ev->key.keysym.sym) {
 		case SDLK_ESCAPE:
 			this->running = false;
+		default:
+			this->keyboard->PressKey(ev->key.keysym.sym);
 		}
+
+		break;
+
+	case SDL_KEYUP:
+		this->keyboard->ReleaseKey(ev->key.keysym.sym);
 		break;
 	}
 }
 
 auto DriveGame::Update(float dt) -> void
 {
-	mesh.Translate(0.1, 0.1);
-	mesh.Rotate(3.14159 * dt);
+	car->Update(dt, this->keyboard);
 }
 
 auto DriveGame::Draw() -> void
 {
-	sdl->Clear(0, 0, 0, 1);
+	sdl->Clear(0.4, 0.7, 0.9, 1);
 
-	mesh.Render();
+	car->Render();
 
 	sdl->UpdateSurface();
 }

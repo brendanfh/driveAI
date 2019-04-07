@@ -4,12 +4,17 @@
 #include <memory>
 #include <unistd.h>
 #include "./gfx/sdl_wrapper.h"
+#include "./input/keyboard.h"
+#include "./world/car.h"
 
 class DriveGame {
 private:
 	std::shared_ptr<SDLWrapper> sdl;
 	std::shared_ptr<GLWrapper> gl;
-	GLMesh mesh;
+
+	std::shared_ptr<Car> car;
+
+	std::shared_ptr<KeyboardManager> keyboard;
 
 	bool running;
 

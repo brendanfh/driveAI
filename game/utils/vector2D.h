@@ -1,3 +1,5 @@
+/* Made by Brendan Hansen */
+
 #ifndef __VECTOR_2D__
 #define __VECTOR_2D__
 #include <functional>

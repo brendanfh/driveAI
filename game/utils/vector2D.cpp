@@ -1,3 +1,5 @@
+/* Made by Brendan Hansen */
+
 #include <cmath>
 #include <string>
 #include "./vector2D.h"

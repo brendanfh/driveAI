@@ -1,3 +1,5 @@
+/* Made by Brendan Hansen */
+
 #ifndef __LINE_H__
 #define __LINE_H__
 

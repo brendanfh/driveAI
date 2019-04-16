@@ -1,3 +1,5 @@
+/* Made by Brendan Hansen */
+
 #include "./line.h"
 
 #define max(a, b) ((a) < (b) ? (b) : (a))

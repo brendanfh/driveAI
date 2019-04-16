@@ -1,3 +1,5 @@
+/* Made by Brendan Hansen */
+
 #include "gl_wrapper.h"
 
 #include <cstring>

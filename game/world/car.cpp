@@ -1,3 +1,5 @@
+/* Made by Brendan Hansen */
+
 #include "./car.h"
 #include <SDL2/SDL.h>
 #include "../utils/line.h"

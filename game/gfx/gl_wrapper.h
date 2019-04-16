@@ -1,3 +1,5 @@
+/* Made by Brendan Hansen */
+
 #ifndef __GL_WRAPPER_H__
 #define __GL_WRAPPER_H__
 

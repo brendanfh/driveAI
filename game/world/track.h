@@ -1,3 +1,5 @@
+/* Made by Brendan Hansen */
+
 #ifndef __TRACK_H__
 #define __TRACK_H__
 

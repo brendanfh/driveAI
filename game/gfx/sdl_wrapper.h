@@ -1,3 +1,5 @@
+/* Made by Brendan Hansen */
+
 #ifndef __SDL_WRAPPER_H__
 #define __SDL_WRAPPER_H__
 

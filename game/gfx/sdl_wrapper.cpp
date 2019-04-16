@@ -1,3 +1,5 @@
+/* Made by Brendan Hansen */
+
 #include "sdl_wrapper.h"
 
 SDLWrapper::SDLWrapper(std::string title, int width, int height)

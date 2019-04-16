@@ -1,3 +1,5 @@
+/* Made by Brendan Hansen */
+
 #include "./track.h"
 
 Track::Track()

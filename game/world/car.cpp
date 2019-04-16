@@ -71,7 +71,11 @@ auto Car::GetDistances(std::vector<float>& dists, float sight, std::shared_ptr<T
 		float ix = cx, iy = cy;
 		track->Intersects(line, ix, iy);
 
-		dists[i++] = sqrt((ix - cx) * (ix - cx) + (iy - cy) * (iy - cy));
+		if (ix == cx && iy == cy) {
+			dists[i++] = sight;
+		} else {
+			dists[i++] = sqrt((ix - cx) * (ix - cx) + (iy - cy) * (iy - cy));
+		}
 	}
 }
 
@@ -91,9 +95,9 @@ auto Car::Update(float dt, std::shared_ptr<KeyboardManager> keys, std::shared_pt
 		force += forward * 30;
 	}
 
-	float fmag = force.Magnitude();
+	float fmag = vel.Magnitude();
 
-	if (fmag > 0) {
+	if (fmag > 20) {
 		float da = 0.0f;
 		if (keys->IsDown(SDLK_a)) {
 			da -= 800 * dt / fmag;
@@ -116,8 +120,12 @@ auto Car::Update(float dt, std::shared_ptr<KeyboardManager> keys, std::shared_pt
 	mesh->SetRotation(-angle);
 	mesh->Buffer();
 
-	//std::vector<float> dists(8);
-	//this->GetDistances(dists, 50, track);
+//	std::vector<float> dists(8);
+//	this->GetDistances(dists, 50, track);
+//	for (float f : dists) {
+//		std::cout << f << std::endl;
+//	}
+//	std::cout << "------------------------------------" << std::endl;
 
 	if (this->Collided(track)) {
 		pos = Vector2D(15, 60);

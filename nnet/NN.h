@@ -8,7 +8,6 @@
 #include "Perceptron/PLayer.h"
 
 namespace NN {
-
 	class Perceptron {
 	private:
 		std::vector<PLayer> layers;
@@ -17,7 +16,7 @@ namespace NN {
 		std::vector<unsigned int> num_nodes_per_layer;
 		float learning_rate;
 
-		auto back_propagate(std::vector<std::vector<std::vector<float>>>& changeWeights,std::vector<float> input) -> void;
+		auto back_propagate(std::vector<std::vector<std::vector<float>>>& changeWeights, std::vector<float> input) -> void;
 		auto back_propagate_delta(std::vector<float>& expectedOutput) -> void;
 
 	public:

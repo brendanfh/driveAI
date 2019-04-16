@@ -32,7 +32,7 @@ auto Activation::Sigmoid_Derivative(float x) -> float
 
 auto Activation::Relu(float x) -> float
 {
-	return fmax(0,x);
+	return fmax(0, x);
 }
 
 auto Activation::Relu_Derivative(float x) -> float 
@@ -42,10 +42,11 @@ auto Activation::Relu_Derivative(float x) -> float
 
 auto Activation::Hyperbolic_Tangent(float x) -> float
 {
-	return (exp(x)-exp(-1))/(exp(x)+exp(-x));
+	return tanh(x);
 }
 
 auto Activation::Hyperbolic_Tangent_Derivative(float x) -> float 
 {
-	return 0;
+	float th = tanh(x);
+	return 1 - th * th;
 }

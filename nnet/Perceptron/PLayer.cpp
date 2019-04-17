@@ -61,7 +61,7 @@ auto PLayer::Activate_Layer(std::vector<float> input) -> std::vector<float>
 	return output;
 }
 
-auto PLayer::set_weights(std::vector<std::vector<float> > new_weights) -> void
+auto PLayer::change_weights(std::vector<std::vector<float> > new_weights) -> void
 {
 	for (int i = 0; i < this->neuron_weights.size(); ++i)
 	{

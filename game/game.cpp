@@ -7,25 +7,37 @@
 
 #define PI 3.14159265
 
-DriveGame::DriveGame()
+DriveGame::DriveGame(std::shared_ptr<SDLWrapper> sdl, std::shared_ptr<GLWrapper> gl)
+	: sdl(sdl), gl(gl)
 {
-	this->sdl = std::make_shared<SDLWrapper>("Drive AI", 800, 600);
-	this->gl = std::make_shared<GLWrapper>();
 	this->car = std::make_shared<Car>(15, 60);
 	this->track = std::make_shared<Track>();
 
-	float loop[128];
+	float loop[64];
 
-	for (int i = 0; i < 64; i++) {
-		loop[i * 2 + 0] = cos(i * 2 * PI / 64.0) * 75 + 80;
-		loop[i * 2 + 1] = sin(i * 2 * PI / 64.0) * 55 + 60;
+	for (int i = 0; i < 32; i++) {
+		loop[i * 2 + 0] = cos(i * 2 * PI / 32.0) * 75 + 80;
+		loop[i * 2 + 1] = sin(i * 2 * PI / 32.0) * 55 + 60;
 	}
-	this->track->AddLoop(loop, 64);
-	for (int i = 0; i < 64; i++) {
-		loop[i * 2 + 0] = cos(i * 2 * PI / 64.0) * 55 + 80;
-		loop[i * 2 + 1] = sin(i * 2 * PI / 64.0) * 35 + 60;
+	this->track->AddLoop(loop, 32);
+	for (int i = 0; i < 32; i++) {
+		loop[i * 2 + 0] = cos(i * 2 * PI / 32.0) * 55 + 80;
+		loop[i * 2 + 1] = sin(i * 2 * PI / 32.0) * 35 + 60;
 	}
-	this->track->AddLoop(loop, 64);
+	this->track->AddLoop(loop, 32);
+
+	// float loop[128];
+
+	// for (int i = 0; i < 64; i++) {
+	// 	loop[i * 2 + 0] = cos(i * 2 * PI / 64.0) * 75 + 80;
+	// 	loop[i * 2 + 1] = sin(i * 2 * PI / 64.0) * 55 + 60;
+	// }
+	// this->track->AddLoop(loop, 64);
+	// for (int i = 0; i < 64; i++) {
+	// 	loop[i * 2 + 0] = cos(i * 2 * PI / 64.0) * 55 + 80;
+	// 	loop[i * 2 + 1] = sin(i * 2 * PI / 64.0) * 35 + 60;
+	// }
+	// this->track->AddLoop(loop, 64);
 
 	this->running = true;
 
@@ -39,35 +51,9 @@ DriveGame::~DriveGame()
 
 }
 
-auto DriveGame::Run() -> void
-{
-	auto lastTime = std::chrono::system_clock::now();
-	auto now = lastTime;
-
-	SDL_Event event;
-	while (this->running) {
-		lastTime = now;
-		now = std::chrono::system_clock::now();
-
-		while (this->sdl->PollEvents(&event)) {
-			this->HandleEvent(&event);
-		}
-
-		float delta = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastTime).count() / 1000.f;
-		this->Update(delta);
-		this->Draw();
-
-		usleep(1000);
-	}	
-}
-
 auto DriveGame::HandleEvent(SDL_Event *ev) -> void
 {
 	switch (ev->type) {
-	case SDL_QUIT:
-		this->running = false;
-		break;
-
 	case SDL_KEYDOWN:
 		switch (ev->key.keysym.sym) {
 		case SDLK_ESCAPE:
@@ -97,4 +83,23 @@ auto DriveGame::Draw() -> void
 	car->Render();
 
 	sdl->UpdateSurface();
+}
+
+auto DriveGame::SetInputs(std::vector<float>& inputs) -> void
+{
+	keyboard->Clear();
+	if (inputs[0] > 0) keyboard->PressKey(SDLK_w);
+	if (inputs[1] > 0) keyboard->PressKey(SDLK_s);
+	if (inputs[2] > 0) keyboard->PressKey(SDLK_a);
+	if (inputs[3] > 0) keyboard->PressKey(SDLK_d);
+}
+
+auto DriveGame::GetCar() -> std::shared_ptr<Car>
+{
+	return car;
+}
+
+auto DriveGame::GetTrack() -> std::shared_ptr<Track>
+{
+	return track;
 }

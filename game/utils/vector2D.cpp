@@ -101,11 +101,14 @@ auto Vector2D::operator/=(float scalar) -> Vector2D& {
     return *this;
 }
 
+[[nodiscard]] auto Vector2D::Dot(const Vector2D& other) const -> float
+{
+    return x * other.x + y * other.y;
+}
 
 [[nodiscard]] auto Vector2D::Magnitude() const -> float {
     return sqrtf(this->x * this->x + this->y * this->y);
 }
-
 
 [[nodiscard]] auto Vector2D::Normalized() const -> Vector2D {
     Vector2D cpy(*this);

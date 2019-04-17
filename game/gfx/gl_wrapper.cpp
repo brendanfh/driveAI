@@ -120,9 +120,8 @@ GLMesh::GLMesh(int max_vertex_count, int max_index_count)
 
 GLMesh::~GLMesh()
 {
-	glDeleteVertexArrays(1, &vao);
-	glDeleteBuffers(1, &v_buffer);
-	glDeleteBuffers(1, &i_buffer);
+	// glDeleteBuffers(1, &v_buffer);
+	// glDeleteBuffers(1, &i_buffer);
 }
 
 auto GLMesh::Init() -> void

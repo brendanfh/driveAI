@@ -19,14 +19,19 @@ private:
 	Vector2D acc;
 	float mass;
 	float angle;
+	bool died;
 
 public:
 	Car(float x, float y);
 	~Car();
 
-	auto Collided(std::shared_ptr<Track> track) -> bool;
+	auto Collided(std::shared_ptr<Track> track) const -> bool;
+	auto GetDistances(std::vector<float>& dists, float sight, std::shared_ptr<Track> track) const -> void;
+	auto IsDrivingForward() const -> bool;
+	auto IsDead() const -> bool;
+	auto Revive() -> void;
+
 	auto Update(float dt, std::shared_ptr<KeyboardManager> keys, std::shared_ptr<Track> track) -> void;
-	auto GetDistances(std::vector<float>& dists, float sight, std::shared_ptr<Track> track) -> void;
 	auto Render() -> void;
 };
 

@@ -96,10 +96,9 @@ auto NN::Perceptron::Save(std::string file_name) -> void
 
 }
 
-auto NN::Perceptron::Activate(std::vector<float> input) -> std::vector<float>
+auto NN::Perceptron::Activate(std::vector<float> input, std::vector<float>& NN_Output) -> void
 {
 	input.insert(input.begin(), 1);
-	std::vector<float> NN_Output;
 
 	for (int i = 0; i < this->layers.size(); ++i)
 	{
@@ -113,41 +112,36 @@ auto NN::Perceptron::Activate(std::vector<float> input) -> std::vector<float>
 			NN_Output = this->layers[i].Activate_Layer(NN_Output);
 		}
 	}
-
-	return NN_Output;
 }
 
 auto NN::Perceptron::Train(std::vector<std::vector<float>>& input, std::vector<std::vector<float>>& expectedOutput) -> void
 {
 	std::vector<std::vector<std::vector<float>>> changeWeights;
-	std::vector<std::vector<std::vector<float>>> tmpWeights;
-	std::vector<float> nn_output;
+    for (int i = 0; i < this->layers.size(); i++)
+    {
+        changeWeights.push_back(std::vector<std::vector<float> >());
+        for (int x = 0; x < this->layers[i].neuron_weights.size(); x++)
+        {
+            changeWeights[i].push_back(std::vector<float>());
+            for (int y = 0; y < this->layers[i].neuron_weights[x].size(); y++)
+            {
+                changeWeights[i][x].push_back(0);
+            }
+        }
+    }
 
+	std::vector<float> nn_output;
 	this->cost = 0;
 	for (int i = 0; i < input.size(); ++i)
 	{
-		nn_output = Activate(input[i]);
+		Activate(input[i], nn_output);
 		for (int p = 0; p < nn_output.size(); ++p)
 		{
 			this->cost += (nn_output[p] - expectedOutput[i][p]) * (nn_output[p] - expectedOutput[i][p]);
 		}
 
 		back_propagate_delta(expectedOutput[i]);
-
-		tmpWeights.clear();
-		tmpWeights = std::vector<std::vector<std::vector<float>>>(this->num_layers);
-		back_propagate(tmpWeights, input[i]);
-
-		for (int x = 0; x < changeWeights.size(); ++x)
-		{
-			for (int y = 0; y < changeWeights[x].size(); ++y)
-			{
-				for (int z = 0; z < changeWeights[x][y].size(); ++z)
-				{
-					changeWeights[x][y][z] += tmpWeights[x][y][z];
-				}
-			}
-		}
+		back_propagate(changeWeights, input[i]);
 	}
 
 	for (int i = 0; i < changeWeights.size(); ++i)
@@ -156,7 +150,6 @@ auto NN::Perceptron::Train(std::vector<std::vector<float>>& input, std::vector<s
 		{
 			for (int y = 0; y < changeWeights[i][x].size(); ++y)
 			{
-				//std::cout << i << " " << x << " " << y << std::endl;
 				changeWeights[i][x][y] /= expectedOutput.size();
 			}
 		}
@@ -164,7 +157,7 @@ auto NN::Perceptron::Train(std::vector<std::vector<float>>& input, std::vector<s
 
 	for (int x = 0; x < changeWeights.size(); ++x)
 	{
-		this->layers[x].set_weights(changeWeights[x]);
+		this->layers[x].change_weights(changeWeights[x]);
 	}
 
 	this->cost /= input.size();
@@ -182,6 +175,15 @@ auto NN::Perceptron::back_propagate_delta(std::vector<float>& expectedOutput) ->
 				layers[i].deltas[x] = 0;
 				for (int q = 0; q < layers[i+1].neuron_weights.size(); ++q)
 				{
+					// if (std::isnan(
+					// 	layers[i+1].deltas[q]
+					// 	* this->layers[i].activation_function_derivative(layers[i+1].pre_activation_function_values[q])
+					// 	* layers[i+1].neuron_weights[q][x]
+					// )) {
+					// 	std::cout << "ASDF" << std::endl;
+					// }
+
+					
 					layers[i].deltas[x] +=
 						layers[i+1].deltas[q]
 						* this->layers[i].activation_function_derivative(layers[i+1].pre_activation_function_values[q])
@@ -197,30 +199,11 @@ auto NN::Perceptron::back_propagate_delta(std::vector<float>& expectedOutput) ->
 	}
 }
 
-auto NN::Perceptron::back_propagate(std::vector<std::vector<std::vector<float>>>& changeWeights,std::vector<float> input) -> void
+auto NN::Perceptron::back_propagate(std::vector<std::vector<std::vector<float>>>& changeWeights, std::vector<float>& input) -> void
 {
-	//push each neuron to its correct location
-	for (int i = 0; i < this->num_layers; ++i)
-	{
-		changeWeights[i] = (std::vector<std::vector<float> >(this->num_nodes_per_layer[i]));
-
-
-		for (int x = 0; x < this->num_nodes_per_layer[i]; ++x)
-		{
-			if (i == 0)
-			{
-				changeWeights[i][x] = (std::vector<float>(this->input_node_count));
-			}
-			else
-			{
-				changeWeights[i][x] = (std::vector<float>(this->num_nodes_per_layer[i-1]));
-			}
-		}
-	}
-
 	for (int i = layers.size()-1; i >= 0; --i)
 	{
-		std::cout << i << std::endl;
+		// std::cout << i << std::endl;
 
 		if (i == 0)
 		{
@@ -231,7 +214,7 @@ auto NN::Perceptron::back_propagate(std::vector<std::vector<std::vector<float>>>
 				{
 					if (y == 0)
 					{
-						changeWeights[i][x][y] =
+						changeWeights[i][x][y] +=
 							-1
 							* learning_rate
 							* layers[i].deltas[x]
@@ -239,7 +222,7 @@ auto NN::Perceptron::back_propagate(std::vector<std::vector<std::vector<float>>>
 					}
 					else
 					{
-						changeWeights[i][x][y] =
+						changeWeights[i][x][y] +=
 							-1
 							* learning_rate
 							* layers[i].deltas[x]
@@ -257,7 +240,7 @@ auto NN::Perceptron::back_propagate(std::vector<std::vector<std::vector<float>>>
 				{
 					if (y == 0)
 					{
-						changeWeights[i][x][y] =
+						changeWeights[i][x][y] +=
 							-1
 							* learning_rate
 							* layers[i].deltas[x]
@@ -265,12 +248,12 @@ auto NN::Perceptron::back_propagate(std::vector<std::vector<std::vector<float>>>
 					}
 					else
 					{
-						changeWeights[i][x][y] =
+						changeWeights[i][x][y] +=
 							-1
 							* learning_rate
 							* layers[i].deltas[x]
 							* this->layers[i].activation_function_derivative(layers[i].pre_activation_function_values[x])
-							* layers[i-1].neuron_values[y-1];
+							* layers[i - 1].neuron_values[y - 1];
 					}
 				}
 			}

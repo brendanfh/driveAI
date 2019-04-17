@@ -38,12 +38,14 @@ public:
     auto Exploit(std::vector<float> inputs, std::vector<float>& best) -> float;
 
     // Trys something new
-    auto Explore(std::vector<float> inputs, std::vector<float>& best) -> float;
+    auto Explore(std::vector<float> sensors, std::vector<float>& best) -> float;
+
+    auto GetKeys(std::vector<float> sensors, std::vector<float>& inputs) -> float;
 
     auto SetLearningRate(float lr) -> void;
     auto SetDiscountFactor(float df) -> void;
     auto SetExploreChance(float ec) -> void;
-    auto GenerateNetwork(std::vector<unsigned int> hidden_layers);
+    auto GenerateNetwork(std::vector<unsigned int> hidden_layers) -> void;
 };
 
 #endif

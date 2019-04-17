@@ -23,13 +23,18 @@ private:
 	bool running;
 
 public:
-	DriveGame();
+	DriveGame(std::shared_ptr<SDLWrapper> sdl, std::shared_ptr<GLWrapper> gl);
 	~DriveGame();
 
 	auto Run() -> void;
 	auto HandleEvent(SDL_Event *ev) -> void;
 	auto Update(float dt) -> void;
 	auto Draw() -> void;
+
+	auto SetInputs(std::vector<float>& inputs) -> void;
+
+	auto GetCar() -> std::shared_ptr<Car>;
+	auto GetTrack() -> std::shared_ptr<Track>;
 };
 
 #endif

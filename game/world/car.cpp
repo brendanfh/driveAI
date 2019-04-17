@@ -32,7 +32,7 @@ Car::~Car()
 {
 }
 
-auto Car::Collided(std::shared_ptr<Track> track) -> bool
+auto Car::Collided(std::shared_ptr<Track> track) const -> bool
 {
 	float dx = 2 * cos(angle);
 	float dy = 1 * sin(angle);
@@ -53,7 +53,7 @@ auto Car::Collided(std::shared_ptr<Track> track) -> bool
 	return false;
 }
 
-auto Car::GetDistances(std::vector<float>& dists, float sight, std::shared_ptr<Track> track) -> void
+auto Car::GetDistances(std::vector<float>& dists, float sight, std::shared_ptr<Track> track) const -> void
 {
 	Line lines[8];
 	for (int i = 0; i < 8; i++) {
@@ -79,6 +79,13 @@ auto Car::GetDistances(std::vector<float>& dists, float sight, std::shared_ptr<T
 	}
 }
 
+auto Car::IsDrivingForward() const -> bool
+{
+	Vector2D forward(cos(angle), sin(angle));
+	float dot = forward.Dot(vel.Normalized());
+	return dot > 0;
+}
+
 auto Car::Update(float dt, std::shared_ptr<KeyboardManager> keys, std::shared_ptr<Track> track) -> void
 {
 	Vector2D force;
@@ -86,7 +93,7 @@ auto Car::Update(float dt, std::shared_ptr<KeyboardManager> keys, std::shared_pt
 	if (keys->IsDown(SDLK_w)) {
 		Vector2D forward(cos(angle), sin(angle));
 
-		force += forward * 170;
+		force += forward * 60;
 	}
 
 	if (keys->IsDown(SDLK_s)) {
@@ -97,7 +104,7 @@ auto Car::Update(float dt, std::shared_ptr<KeyboardManager> keys, std::shared_pt
 
 	float fmag = vel.Magnitude();
 
-	if (fmag > 20) {
+	if (abs(fmag) > 20) {
 		float da = 0.0f;
 		if (keys->IsDown(SDLK_a)) {
 			da -= 800 * dt / fmag;
@@ -127,12 +134,25 @@ auto Car::Update(float dt, std::shared_ptr<KeyboardManager> keys, std::shared_pt
 //	}
 //	std::cout << "------------------------------------" << std::endl;
 
+	// std::cout << IsDrivingForward() << std::endl;
+
 	if (this->Collided(track)) {
-		pos = Vector2D(15, 60);
-		angle = -1.57f;
-		vel = Vector2D(0, 0);
-		acc = Vector2D(0, 0);
+		died = true;
 	}
+}
+
+auto Car::IsDead() const -> bool
+{
+	return died;
+}
+
+auto Car::Revive() -> void
+{
+	pos = Vector2D(15, 60);
+	angle = -1.57f;
+	vel = Vector2D(0, 0);
+	acc = Vector2D(0, 0);
+	died = false;
 }
 
 auto Car::Render() -> void

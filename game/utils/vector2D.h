@@ -27,6 +27,7 @@ class Vector2D {
         auto operator*=(float scalar) -> Vector2D&;
         auto operator/=(float scalar) -> Vector2D&;
 
+        [[nodiscard]] auto Dot(const Vector2D& other) const -> float;
         [[nodiscard]] auto Magnitude() const -> float;
         [[nodiscard]] auto Normalized() const -> Vector2D;
         [[nodiscard]] auto GetOrtho() const -> Vector2D;

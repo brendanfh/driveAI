@@ -22,7 +22,7 @@ private:
 	std::function<float(float)> activation_function;
 	std::function<float(float)> activation_function_derivative;
 
-	auto set_weights(std::vector<std::vector<float> > new_weights) -> void;
+	auto change_weights(std::vector<std::vector<float> > new_weights) -> void;
 
 public:
 	PLayer(unsigned int previous_layers_node_count, unsigned int node_count, Activation::Activation_Function activation_function);

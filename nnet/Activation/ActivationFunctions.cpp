@@ -1,4 +1,5 @@
 #include "ActivationFunctions.h"
+#include <cfloat>
 
 auto Activation::Identity(float x) -> float 
 {
@@ -17,7 +18,13 @@ auto Activation::Fast_Sigmoid(float x) -> float
 
 auto Activation::Fast_Sigmoid_Derivative(float x) -> float
 {
-	return 1 / ((1.f + fabs(x)) * (1.f + fabs(x)));
+	float tmp = 1.f / ((1.f + fabs(x)) * (1.f + fabs(x)));
+	// if (!std::isnan(x))
+		return tmp;
+	// else
+	// {
+	// 	throw "ERRORRRR";
+	// }
 }
 
 auto Activation::Sigmoid(float x) -> float
@@ -27,7 +34,8 @@ auto Activation::Sigmoid(float x) -> float
 
 auto Activation::Sigmoid_Derivative(float x) -> float 
 {
-	return 0;
+	float ex = exp(-x);
+	return ex / ((1 + ex) * (1 + ex));
 }
 
 auto Activation::Relu(float x) -> float

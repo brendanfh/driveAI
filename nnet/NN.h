@@ -16,7 +16,7 @@ namespace NN {
 		std::vector<unsigned int> num_nodes_per_layer;
 		float learning_rate;
 
-		auto back_propagate(std::vector<std::vector<std::vector<float>>>& changeWeights, std::vector<float> input) -> void;
+		auto back_propagate(std::vector<std::vector<std::vector<float>>>& changeWeights, std::vector<float>& input) -> void;
 		auto back_propagate_delta(std::vector<float>& expectedOutput) -> void;
 
 	public:
@@ -25,7 +25,7 @@ namespace NN {
 		Perceptron(std::string file_name);
 
 		auto Save(std::string file_name) -> void;
-		auto Activate(std::vector<float> input) -> std::vector<float>;
+		auto Activate(std::vector<float> input, std::vector<float>& NN_Output) -> void;
 
 		auto Train(std::vector<std::vector<float>>& input, std::vector<std::vector<float>>& expectedOutput) -> void;
 		float cost;

@@ -32,10 +32,10 @@ Car::~Car()
 {
 }
 
-auto Car::Collided(std::shared_ptr<Track> track) const -> bool
+auto Car::CollidedWall(std::shared_ptr<Track> track) const -> bool
 {
-	float dx = 2 * cos(angle);
-	float dy = 1 * sin(angle);
+	float dx = 3.f * cos(angle);
+	float dy = 2.f * sin(angle);
 	float x = pos.x;
 	float y = pos.y;
 	Line lines[] = {
@@ -50,6 +50,28 @@ auto Car::Collided(std::shared_ptr<Track> track) const -> bool
 			return true;
 		}
 	}
+	return false;
+}
+
+auto Car::CollidedGate(std::shared_ptr<Gates> gates) const -> bool
+{
+	float dx = 3.f * cos(angle);
+	float dy = 2.f * sin(angle);
+	float x = pos.x;
+	float y = pos.y;
+	Line lines[] = {
+		Line(x + dx, y + dy, x - dx, y + dy),
+		Line(x - dx, y + dy, x - dx, y - dy),
+		Line(x - dx, y - dy, x + dx, y - dy),
+		Line(x + dx, y - dy, x - dx, y + dy)
+	};
+
+	for (Line& line : lines) {
+		if (gates->HitTarget(line)) {
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -70,6 +92,10 @@ auto Car::GetDistances(std::vector<float>& dists, float sight, std::shared_ptr<T
 	for (Line& line : lines) {
 		float ix = cx, iy = cy;
 		track->Intersects(line, ix, iy);
+
+		if (std::isnan(ix) || std::isnan(iy)) {
+			throw "NAN";
+		}
 
 		if (ix == cx && iy == cy) {
 			dists[i++] = sight;
@@ -93,19 +119,21 @@ auto Car::Update(float dt, std::shared_ptr<KeyboardManager> keys, std::shared_pt
 	if (keys->IsDown(SDLK_w)) {
 		Vector2D forward(cos(angle), sin(angle));
 
-		force += forward * 60;
+		force += forward * 40;
 	}
 
 	if (keys->IsDown(SDLK_s)) {
 		Vector2D forward(-cos(angle), -sin(angle));
 
-		force += forward * 30;
+		//vel *= 0.9;
+		force += forward * 20;
 	}
 
 	float fmag = vel.Magnitude();
 
-	if (abs(fmag) > 20) {
+	if (abs(fmag) > 2) {
 		float da = 0.0f;
+
 		if (keys->IsDown(SDLK_a)) {
 			da -= 800 * dt / fmag;
 		}
@@ -113,13 +141,13 @@ auto Car::Update(float dt, std::shared_ptr<KeyboardManager> keys, std::shared_pt
 			da += 800 * dt / fmag;
 		}
 
-		if (da > 4 * dt) da = 4 * dt;
-		if (da < -4 * dt) da = 4 * -dt;
+		if (da > 4.0f * dt) da = 4.0f * dt;
+		if (da < -4.0f * dt) da = 4.0f * -dt;
 		angle += da;
 	}
 
 	acc = (force / mass);
-	vel *= 0.96;
+	vel *= 0.96f;
 	vel += acc * dt;
 	pos += vel * dt;
 
@@ -136,7 +164,7 @@ auto Car::Update(float dt, std::shared_ptr<KeyboardManager> keys, std::shared_pt
 
 	// std::cout << IsDrivingForward() << std::endl;
 
-	if (this->Collided(track)) {
+	if (this->CollidedWall(track)) {
 		died = true;
 	}
 }

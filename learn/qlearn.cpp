@@ -11,6 +11,7 @@ QLearn::QLearn(int num_sensors, int num_inputs)
     this->discount_factor = 0.0f;
     this->explore_chance = 0.0f;
     this->learning_rate = 0.0f;
+    this->trials = std::vector<Trial>();
 }
 
 auto QLearn::AddTrial(Trial trial) -> void
@@ -25,6 +26,8 @@ auto QLearn::Learn() -> void
 
     std::vector<float> tmp;
     for (Trial& trial : trials) {
+        // if (randf() > .9f) continue;
+
         std::vector<float> in;
         in.insert(in.end(), trial.prev_state.begin(), trial.prev_state.end());
         in.insert(in.end(), trial.inputs.begin(), trial.inputs.end());
@@ -55,20 +58,25 @@ auto QLearn::Learn() -> void
 auto QLearn::Exploit(std::vector<float> sensors, std::vector<float>& best) -> float
 {
     std::vector<float> input_copy(sensors);
+    for (int j = 0; j < num_inputs; j++) {
+        input_copy.push_back(0);
+    }
 
-    float highest = -100000;
+    float highest = -100000.0f;
+
+    std::vector<float> output;
 
     int num_combinations = 1 << num_inputs;
     for (int i = 0; i < num_combinations; i++) {
         for (int j = 0; j < num_inputs; j++) {
             if ((1 << j) & i != 0) {
-                input_copy.push_back(1);
+                input_copy[j + num_sensors] = 0.5f;
             } else {
-                input_copy.push_back(0);
+                input_copy[j + num_sensors] = -0.5f;
             }
         }
 
-        std::vector<float> output;
+        output.clear();
         network->Activate(input_copy, output);
         float a = output.at(0);
 
@@ -80,9 +88,6 @@ auto QLearn::Exploit(std::vector<float> sensors, std::vector<float>& best) -> fl
                 best.push_back(*it);
             }
         }
-
-        input_copy.clear();
-        input_copy.assign(sensors.begin(), sensors.end());
     }
 
     return highest;
@@ -94,9 +99,9 @@ auto QLearn::Explore(std::vector<float> inputs, std::vector<float>& best) -> flo
 
     for (int i = 0; i < num_inputs; i++) {
         if (rand() % 100 >= 50) {
-            best.push_back(1);
+            best.push_back(0.5f);
         } else {
-            best.push_back(0);
+            best.push_back(-0.5f);
         }
     }
 
@@ -104,8 +109,7 @@ auto QLearn::Explore(std::vector<float> inputs, std::vector<float>& best) -> flo
 
     std::vector<float> output;
     network->Activate(inputs, output);
-    float a = output.at(0);
-    return a;
+    return output.at(0);
 }
 
 auto QLearn::GetKeys(std::vector<float> sensors, std::vector<float>& inputs) -> float
@@ -134,5 +138,5 @@ auto QLearn::SetExploreChance(float ec) -> void
 
 auto QLearn::GenerateNetwork(std::vector<unsigned int> hidden_layers) -> void
 {
-    this->network = std::make_shared<NN::Perceptron>(num_sensors + num_inputs, 1, hidden_layers, Activation::FAST_SIGMOID, 0.01);
+    this->network = std::make_shared<NN::Perceptron>(num_sensors + num_inputs, 1, hidden_layers, Activation::FAST_SIGMOID, 0.1);
 }

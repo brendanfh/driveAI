@@ -9,6 +9,7 @@
 #include "../gfx/gl_wrapper.h"
 #include "../input/keyboard.h"
 #include "./track.h"
+#include "./gates.h"
 
 class Car {
 private:
@@ -25,7 +26,8 @@ public:
 	Car(float x, float y);
 	~Car();
 
-	auto Collided(std::shared_ptr<Track> track) const -> bool;
+	auto CollidedWall(std::shared_ptr<Track> track) const -> bool;
+	auto CollidedGate(std::shared_ptr<Gates> track) const -> bool;
 	auto GetDistances(std::vector<float>& dists, float sight, std::shared_ptr<Track> track) const -> void;
 	auto IsDrivingForward() const -> bool;
 	auto IsDead() const -> bool;

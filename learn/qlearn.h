@@ -17,7 +17,6 @@ struct Trial {
 
 class QLearn {
 private:
-    std::vector<Trial> trials;
 
     std::shared_ptr<NN::Perceptron> network;
 
@@ -29,6 +28,7 @@ private:
     int num_inputs;
 
 public:
+    std::vector<Trial> trials;
     QLearn(int num_sensors, int num_inputs);
 
     auto AddTrial(Trial trial) -> void;

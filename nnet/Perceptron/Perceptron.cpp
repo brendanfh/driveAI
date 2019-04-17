@@ -161,7 +161,7 @@ auto NN::Perceptron::Train(std::vector<std::vector<float>>& input, std::vector<s
 	}
 
 	this->cost /= input.size();
-	this->cost /= layers[layers.size()-1].neuron_weights.size();
+	this->cost /= layers[layers.size()-1].neuron_values.size();
 }
 
 auto NN::Perceptron::back_propagate_delta(std::vector<float>& expectedOutput) -> void
@@ -193,7 +193,7 @@ auto NN::Perceptron::back_propagate_delta(std::vector<float>& expectedOutput) ->
 			else
 			{
 				// Last Layer
-				layers[i].deltas[x] = 2 * (layers[i].neuron_values[x] - expectedOutput[x]);
+				layers[i].deltas[x] = 2.0f * (layers[i].neuron_values[x] - expectedOutput[x]);
 			}
 		}
 	}
@@ -215,7 +215,7 @@ auto NN::Perceptron::back_propagate(std::vector<std::vector<std::vector<float>>>
 					if (y == 0)
 					{
 						changeWeights[i][x][y] +=
-							-1
+							-1.0f
 							* learning_rate
 							* layers[i].deltas[x]
 							* this->layers[i].activation_function_derivative(layers[i].pre_activation_function_values[x]);
@@ -223,7 +223,7 @@ auto NN::Perceptron::back_propagate(std::vector<std::vector<std::vector<float>>>
 					else
 					{
 						changeWeights[i][x][y] +=
-							-1
+							-1.0f
 							* learning_rate
 							* layers[i].deltas[x]
 							* this->layers[i].activation_function_derivative(layers[i].pre_activation_function_values[x])
@@ -241,7 +241,7 @@ auto NN::Perceptron::back_propagate(std::vector<std::vector<std::vector<float>>>
 					if (y == 0)
 					{
 						changeWeights[i][x][y] +=
-							-1
+							-1.0f
 							* learning_rate
 							* layers[i].deltas[x]
 							* this->layers[i].activation_function_derivative(layers[i].pre_activation_function_values[x]);
@@ -249,7 +249,7 @@ auto NN::Perceptron::back_propagate(std::vector<std::vector<std::vector<float>>>
 					else
 					{
 						changeWeights[i][x][y] +=
-							-1
+							-1.0f
 							* learning_rate
 							* layers[i].deltas[x]
 							* this->layers[i].activation_function_derivative(layers[i].pre_activation_function_values[x])
@@ -260,13 +260,3 @@ auto NN::Perceptron::back_propagate(std::vector<std::vector<std::vector<float>>>
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-

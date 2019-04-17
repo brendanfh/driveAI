@@ -30,11 +30,11 @@ Runner::Runner()
 	game = std::make_shared<DriveGame>(sdl, gl);
 	qlearn = std::make_shared<QLearn>(8, 4);
 
-	qlearn->SetDiscountFactor(0.7);
-	qlearn->SetExploreChance(0.1);
+	qlearn->SetDiscountFactor(0.2);
+	qlearn->SetExploreChance(0.2);
 	qlearn->SetLearningRate(0.4);
 
-	std::vector<unsigned int> layers = {8, 6};
+	std::vector<unsigned int> layers = {12, 8, 6};
 	qlearn->GenerateNetwork(layers);
 }
 
@@ -54,7 +54,9 @@ auto Runner::Run() -> void
 		}
 
 		float delta = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastTime).count() / 1000.f;
-		this->Update(delta);
+		if (delta > 0.05f) delta = 0.05f;
+		for (int i = 0; i < 10; i++)
+			this->Update(delta);
 		this->Draw();
 
 		usleep(1000);
@@ -72,6 +74,19 @@ auto Runner::HandleEvent(SDL_Event* ev) -> void
 		switch (ev->key.keysym.sym) {
 		case SDLK_ESCAPE:
 			this->running = false;
+			break;
+		case SDLK_l:
+			printf("\033[3;10HLearning   \n");
+			qlearn->SetExploreChance(0.2);
+			break;
+		case SDLK_k:
+			printf("\033[3;10HExploiting \n");
+			qlearn->SetExploreChance(0);
+			break;
+		case SDLK_j:
+			printf("\033[3;10HExploringish \n");
+			qlearn->SetExploreChance(0.9f);
+			break;
 		}
 
 	/* FALLTHROUGH */
@@ -82,25 +97,38 @@ auto Runner::HandleEvent(SDL_Event* ev) -> void
 }
 
 int times = 0;
+std::vector<float> inputs(4);
 auto Runner::Update(float dt) -> void
 {
-	std::vector<float> inputs;
 	std::vector<float> sensors;
 	this->game->GetCar()->GetDistances(sensors, 50, this->game->GetTrack());
 
+	if (sensors.size() != 8) { throw "NOPE"; }
+
 	for (float& sense : sensors) {
 		sense /= 50.0f;
+		sense = 1.0f - sense;
 	}
 
-	qlearn->GetKeys(sensors, inputs);
+	if (times % 8 == 0)
+		qlearn->GetKeys(sensors, inputs);
+
+	printf("\033[1;10H");
+	printf("Up: %.1f, Down: %.1f, Left: %.1f, Right: %.1f\n", inputs[0], inputs[1], inputs[2], inputs[3]);
 
 	this->game->SetInputs(inputs);
-	// for (int i = 0; i < 10; i++)
+	float prescore = game->GetScore();
 	this->game->Update(dt);	
+	float postscore = game->GetScore();
 
-	float reward = 1;
+	float reward = 0;
+	if (postscore > prescore) {
+		//The car crossed a reward gate
+		reward = 100;
+	}
+
 	if (game->GetCar()->IsDead()) {
-		reward = -1;
+		reward = -100;
 		game->GetCar()->Revive();
 	}
 
@@ -116,6 +144,18 @@ auto Runner::Update(float dt) -> void
 	qlearn->AddTrial(trial);
 
 	if (times++ >= 240) {
+		// for (Trial& trial : qlearn->trials) {
+		// 	for (float& in : trial.prev_state) {
+		// 		if (std::isnan(in)) { throw "AHHH"; }
+		// 	}
+		// 	for (float& in : trial.inputs) {
+		// 		if (std::isnan(in)) { throw "AHHH"; }
+		// 	}
+		// 	for (float& in : trial.new_state) {
+		// 		if (std::isnan(in)) { throw "AHHH"; }
+		// 	}
+		// }
+
 		times = 0;
 		qlearn->Learn();
 	}
@@ -127,6 +167,8 @@ auto Runner::Draw() -> void
 }
 
 int main() {
+	srand(time(NULL));
+
 	Runner runner;
 
 	runner.Run();

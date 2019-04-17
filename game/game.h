@@ -9,6 +9,7 @@
 #include "./input/keyboard.h"
 #include "./world/car.h"
 #include "./world/track.h"
+#include "./world/gates.h"
 
 class DriveGame {
 private:
@@ -17,10 +18,11 @@ private:
 
 	std::shared_ptr<Car> car;
 	std::shared_ptr<Track> track;
+	std::shared_ptr<Gates> gates;
 
 	std::shared_ptr<KeyboardManager> keyboard;
 
-	bool running;
+	float score;
 
 public:
 	DriveGame(std::shared_ptr<SDLWrapper> sdl, std::shared_ptr<GLWrapper> gl);
@@ -31,6 +33,7 @@ public:
 	auto Update(float dt) -> void;
 	auto Draw() -> void;
 
+	[[nodiscard]] auto GetScore() const -> float;
 	auto SetInputs(std::vector<float>& inputs) -> void;
 
 	auto GetCar() -> std::shared_ptr<Car>;

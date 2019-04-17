@@ -1,6 +1,7 @@
 /* Made by Brendan Hansen */
 
 #include "./line.h"
+#include <cmath>
 
 #define max(a, b) ((a) < (b) ? (b) : (a))
 #define min(a, b) ((a) < (b) ? (a) : (b))
@@ -59,7 +60,7 @@ auto Line::Intersects(const Line& other) const -> bool
 auto Line::Intersection(const Line& other) const -> Vector2D
 {
 	float s = (x1 - x2) * (other.y1 - other.y2) - (y1 - y2) * (other.x1 - other.x2);
-	if (s == 0.0f) {
+	if (fabs(s) < 0.00001f) {
 		return Vector2D(0, 0);
 	}
 

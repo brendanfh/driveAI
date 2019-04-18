@@ -28,7 +28,7 @@ Runner::Runner()
 	sdl = std::make_shared<SDLWrapper>("Drive AI", 800, 600);
 	gl = std::make_shared<GLWrapper>();
 	game = std::make_shared<DriveGame>(sdl, gl);
-	qlearn = std::make_shared<QLearn>(8, 4);
+	qlearn = std::make_shared<QLearn>(8, 4, 100);
 
 	qlearn->SetDiscountFactor(0.2);
 	qlearn->SetExploreChance(0.2);
@@ -55,8 +55,8 @@ auto Runner::Run() -> void
 
 		float delta = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastTime).count() / 1000.f;
 		if (delta > 0.05f) delta = 0.05f;
-		for (int i = 0; i < 10; i++)
-			this->Update(delta);
+		// for (int i = 0; i < 10; i++)
+		this->Update(delta);
 		this->Draw();
 
 		usleep(1000);
@@ -107,7 +107,7 @@ auto Runner::Update(float dt) -> void
 
 	for (float& sense : sensors) {
 		sense /= 50.0f;
-		sense = 1.0f - sense;
+		// sense = 1.0f - sense;
 	}
 
 	if (times % 8 == 0)
@@ -121,14 +121,14 @@ auto Runner::Update(float dt) -> void
 	this->game->Update(dt);	
 	float postscore = game->GetScore();
 
-	float reward = 0;
+	float reward = -.5f;
 	if (postscore > prescore) {
 		//The car crossed a reward gate
-		reward = 100;
+		reward = 2;
 	}
 
 	if (game->GetCar()->IsDead()) {
-		reward = -100;
+		reward = -2;
 		game->GetCar()->Revive();
 	}
 
@@ -143,7 +143,7 @@ auto Runner::Update(float dt) -> void
 
 	qlearn->AddTrial(trial);
 
-	if (times++ >= 240) {
+	// if (times++ >= 240) {
 		// for (Trial& trial : qlearn->trials) {
 		// 	for (float& in : trial.prev_state) {
 		// 		if (std::isnan(in)) { throw "AHHH"; }
@@ -156,9 +156,9 @@ auto Runner::Update(float dt) -> void
 		// 	}
 		// }
 
-		times = 0;
-		qlearn->Learn();
-	}
+		// times = 0;
+	qlearn->Learn();
+	// }
 }
 
 auto Runner::Draw() -> void

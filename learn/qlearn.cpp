@@ -5,28 +5,42 @@
 
 #define randf() ((double) rand() / (RAND_MAX))
 
-QLearn::QLearn(int num_sensors, int num_inputs)
+QLearn::QLearn(int num_sensors, int num_inputs, int batch_size)
     : num_sensors(num_sensors), num_inputs(num_inputs)
 {
     this->discount_factor = 0.0f;
     this->explore_chance = 0.0f;
     this->learning_rate = 0.0f;
-    this->trials = std::vector<Trial>();
+    this->trials = std::vector<Trial>(batch_size);
+    trial_ptr = 0;
+    buffer_full = false;
 }
 
 auto QLearn::AddTrial(Trial trial) -> void
 {
-    this->trials.push_back(trial);
+    this->trials[trial_ptr] = trial;
+
+    if (buffer_full)
+        trial_ptr += rand() % 3 + 1;
+    else
+        trial_ptr++;
+    
+    if (trial_ptr >= trials.size()) {
+        trial_ptr = 0;
+        buffer_full = true;
+    }
 }
 
 auto QLearn::Learn() -> void
 {
+    if (!buffer_full) return;
+
     std::vector<std::vector<float>> net_inputs;
     std::vector<std::vector<float>> net_outputs;
 
     std::vector<float> tmp;
     for (Trial& trial : trials) {
-        // if (randf() > .9f) continue;
+        if (randf() > .9f) continue;
 
         std::vector<float> in;
         in.insert(in.end(), trial.prev_state.begin(), trial.prev_state.end());
@@ -50,7 +64,6 @@ auto QLearn::Learn() -> void
     network->Train(net_inputs, net_outputs);
     std::cout << network->cost << std::endl;
 
-    trials.clear();
     net_inputs.clear();
     net_outputs.clear();
 }
@@ -138,5 +151,5 @@ auto QLearn::SetExploreChance(float ec) -> void
 
 auto QLearn::GenerateNetwork(std::vector<unsigned int> hidden_layers) -> void
 {
-    this->network = std::make_shared<NN::Perceptron>(num_sensors + num_inputs, 1, hidden_layers, Activation::FAST_SIGMOID, 0.1);
+    this->network = std::make_shared<NN::Perceptron>(num_sensors + num_inputs, 1, hidden_layers, Activation::HYPERBOLIC_TANGENT, 0.1);
 }

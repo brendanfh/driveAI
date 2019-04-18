@@ -27,9 +27,12 @@ private:
     int num_sensors;
     int num_inputs;
 
+    int trial_ptr;
+    bool buffer_full;
+
 public:
     std::vector<Trial> trials;
-    QLearn(int num_sensors, int num_inputs);
+    QLearn(int num_sensors, int num_inputs, int batch_size);
 
     auto AddTrial(Trial trial) -> void;
     auto Learn() -> void;

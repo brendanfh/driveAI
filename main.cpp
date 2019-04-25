@@ -76,15 +76,15 @@ auto Runner::HandleEvent(SDL_Event* ev) -> void
 			this->running = false;
 			break;
 		case SDLK_l:
-			printf("\033[3;10HLearning   \n");
+			printf("\033[3;10HLearning       \n");
 			qlearn->SetExploreChance(0.2);
 			break;
 		case SDLK_k:
-			printf("\033[3;10HExploiting \n");
+			printf("\033[3;10HExploiting     \n");
 			qlearn->SetExploreChance(0);
 			break;
 		case SDLK_j:
-			printf("\033[3;10HExploringish \n");
+			printf("\033[3;10HExploringish   \n");
 			qlearn->SetExploreChance(0.9f);
 			break;
 		}

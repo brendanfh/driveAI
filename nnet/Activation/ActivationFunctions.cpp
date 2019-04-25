@@ -13,12 +13,12 @@ auto Activation::Identity_Derivative(float x) -> float
 
 auto Activation::Fast_Sigmoid(float x) -> float
 {
-	return (x / (1 + fabs(x)));
+	return (x / (1 + fabsf(x)));
 }
 
 auto Activation::Fast_Sigmoid_Derivative(float x) -> float
 {
-	float tmp = 1.f / ((1.f + fabs(x)) * (1.f + fabs(x)));
+	float tmp = 1.f / ((1.f + fabsf(x)) * (1.f + fabsf(x)));
 	// if (!std::isnan(x))
 		return tmp;
 	// else
@@ -29,12 +29,12 @@ auto Activation::Fast_Sigmoid_Derivative(float x) -> float
 
 auto Activation::Sigmoid(float x) -> float
 {
-	return (float)(1 / 1 + exp(-x));
+	return (float)(1 / 1 + expf(-x));
 }
 
 auto Activation::Sigmoid_Derivative(float x) -> float 
 {
-	float ex = exp(-x);
+	float ex = expf(-x);
 	return ex / ((1 + ex) * (1 + ex));
 }
 
@@ -50,11 +50,11 @@ auto Activation::Relu_Derivative(float x) -> float
 
 auto Activation::Hyperbolic_Tangent(float x) -> float
 {
-	return tanh(x);
+	return tanhf(x);
 }
 
 auto Activation::Hyperbolic_Tangent_Derivative(float x) -> float 
 {
-	float th = tanh(x);
+	float th = tanhf(x);
 	return 1 - th * th;
 }

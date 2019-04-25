@@ -12,7 +12,7 @@ PLayer::PLayer(unsigned int previous_layers_node_count, unsigned int node_count,
 	{
 		for (int x = 0; x < previous_layers_node_count + 1; ++x)
 		{
-			neuron_w[x] = ((float)(rand() % 2000) - 1000) / 500;
+			neuron_w[x] = ((float)(rand() % 2000) - 1000.0f) / 500.0f;
 		}
 		this->neuron_weights.push_back(neuron_w);
         this->pre_activation_function_values.push_back(0);

@@ -82,7 +82,7 @@ auto QLearn::Exploit(std::vector<float> sensors, std::vector<float>& best) -> fl
     int num_combinations = 1 << num_inputs;
     for (int i = 0; i < num_combinations; i++) {
         for (int j = 0; j < num_inputs; j++) {
-            if ((1 << j) & i != 0) {
+            if (((1 << j) & i) != 0) {
                 input_copy[j + num_sensors] = 0.5f;
             } else {
                 input_copy[j + num_sensors] = -0.5f;
